@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spell Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f4f4f9;
+        }
+
+        .app {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .suggestions-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .progress {
+            margin-top: 20px;
+        }
+
+        .progress span {
+            display: block;
+            margin: 5px 0;
+        }
+
+        #suggestions {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            min-height: 150px;
+        }
+
+        #suggestions ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #suggestions li {
+            color: green;
+            margin-bottom: 5px;
+        }
+
+        .nav-bar {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-bar a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+
+        .nav-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .dark-mode-toggle {
+            cursor: pointer;
+        }
+
+        .dark-mode {
+            background: #333;
+            color: #fff;
+        }
+
+        .dark-mode textarea {
+            background: #444;
+            color: #fff;
+        }
+
+        .dark-mode #suggestions {
+            background: #444;
+            color: #fff;
+        }
+      .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal h3 {
+            margin: 0 0 10px;
+        }
+
+        .modal p {
+            margin: 0 0 20px;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .show-modal {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <div>
+            <a href="#" id="fileButton">File</a>
+            <a href="#" id="settingsButton">Settings</a>
+            <a href="#" id="helpButton">Help</a>
+        </div>
+        <div class="dark-mode-toggle">Toggle Dark Mode</div>
+    </div>
+
+    <div class="app">
+        <h1>Spell Checker</h1>
+        <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
+
+        <div class="suggestions-container">
+            <div id="suggestions">
+                <h3>Suggestions:</h3>
+                <ul></ul>
+            </div>
+        </div>
+
+        <div class="progress">
+            <span id="totalWords">Total Words: 0</span>
+            <span id="totalCorrections">Total Corrections: 0</span>
+        </div>
+    </div>
+  <!-- Help Modal -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="helpModal">
+        <h3>Help</h3>
+        <p>Use this spell checker to analyze your text and get suggestions for any misspelled words.</p>
+        <button id="closeHelpModal">Close</button>
+    </div>
+
+    <!-- File Modal -->
+    <div class="modal" id="fileModal">
+        <h3>File Options</h3>
+        <button id="uploadFile">Upload File</button>
+        <button id="downloadFile">Download Text</button>
+        <button id="clearText">Clear Text</button>
+        <input type="file" id="fileInput" style="display: none;">
+        <button id="closeFileModal">Close</button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <h3>Settings</h3>
+        <label>
+            <input type="checkbox" id="autoCheckToggle"> Enable Auto Spell-Check
+        </label>
+        <br><br>
+        <label for="fontSize">Text Area Font Size:</label>
+        <select id="fontSize">
+            <option value="14px">14px</option>
+            <option value="16px" selected>16px</option>
+            <option value="18px">18px</option>
+        </select>
+        <br><br>
+        <button id="closeSettingsModal">Close</button>
+    </div>
+
+
+    <script>
+      // Modal Logic
+        function setupModal(buttonId, modalId, closeButtonId) {
+            const button = document.getElementById(buttonId);
+            const modal = document.getElementById(modalId);
+            const closeButton = document.getElementById(closeButtonId);
+            const overlay = document.getElementById("modalOverlay");
+
+            button.addEventListener("click", () => {
+                modal.classList.add("show-modal");
+                overlay.classList.add("show-modal");
+            });
+
+            closeButton.addEventListener("click", () => {
+                modal.classList.remove("show-modal");
+                overlay.classList.remove("show-modal");
+            });
+
+            overlay.addEventListener("click", () => {
+                modal.classList.remove("show-modal");
+                overlay.classList.remove("show-modal");
+            });
+        }
+
+        setupModal("helpButton", "helpModal", "closeHelpModal");
+        setupModal("fileButton", "fileModal", "closeFileModal");
+        setupModal("settingsButton", "settingsModal", "closeSettingsModal");
+
+        // Dark Mode Toggle
+        document.querySelector(".dark-mode-toggle").addEventListener("change", () => {
+            document.body.classList.toggle("dark-mode");
+        });
+
+        // File Functionality
+        const textInput = document.getElementById("textInput");
+
+        // Upload File
+        document.getElementById("uploadFile").addEventListener("click", () => {
+            document.getElementById("fileInput").click();
+        });
+
+        document.getElementById("fileInput").addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    textInput.value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Download File
+        document.getElementById("downloadFile").addEventListener("click", () => {
+            const blob = new Blob([textInput.value], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "text.txt";
+            link.click();
+        });
+
+        // Clear Text
+        document.getElementById("clearText").addEventListener("click", () => {
+            textInput.value = "";
+        });
+
+        // Settings Functionality
+        document.getElementById("fontSize").addEventListener("change", (event) => {
+            textInput.style.fontSize = event.target.value;
+        });
+
+        document.getElementById("autoCheckToggle").addEventListener("change", (event) => {
+            alert(`Auto Spell-Check: ${event.target.checked ? "Enabled" : "Disabled"}`);
+        });
+        // Load dictionary from a file (mocked for now)
+        async function loadDictionary(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Failed to load dictionary.");
+                const text = await response.text();
+                return text.split("\n").map(word => word.trim());
+            } catch (error) {
+                console.error(error);
+                return [];
+            }
+        }
+
+        // Create a dictionary set for fast lookups
+        function createDictionaryHash(dictionary) {
+            return new Set(dictionary);
+        }
+
+        // Check if a word is in the dictionary
+        function isWordInDictionary(word, dictHash) {
+            return dictHash.has(word);
+        }
+
+        // Generate edits with one modification (deletion, insertion, substitution)
+        function generateEdits1(word) {
+            const edits = [];
+            const n = word.length;
+
+            // Deletions
+            for (let i = 0; i < n; i++) {
+                edits.push(word.slice(0, i) + word.slice(i + 1));
+            }
+
+            // Insertions
+            for (let i = 0; i <= n; i++) {
+                for (let c = 97; c <= 122; c++) { // ASCII 'a' to 'z'
+                    edits.push(word.slice(0, i) + String.fromCharCode(c) + word.slice(i));
+                }
+            }
+
+            // Substitutions
+            for (let i = 0; i < n; i++) {
+                for (let c = 97; c <= 122; c++) {
+                    if (word[i] !== String.fromCharCode(c)) {
+                        edits.push(word.slice(0, i) + String.fromCharCode(c) + word.slice(i + 1));
+                    }
+                }
+            }
+
+            return edits;
+        }
+
+        // Generate spell check suggestions
+        function spellCheck(word, dictHash) {
+            const suggestions = [];
+            const edits = generateEdits1(word);
+
+            for (const edit of edits) {
+                if (isWordInDictionary(edit, dictHash)) {
+                    suggestions.push(edit);
+                }
+            }
+
+            return suggestions;
+        }
+
+        // Initialize the spell checker
+        async function main() {
+            const dictionaryUrl = "words.txt"; // Replace with the URL to your dictionary file
+            const dictionary = await loadDictionary(dictionaryUrl);
+            const dictHash = createDictionaryHash(dictionary);
+
+            const inputField = document.getElementById("textInput");
+            const suggestionsContainer = document.getElementById("suggestions").querySelector("ul");
+            const totalWordsEl = document.getElementById("totalWords");
+            const totalCorrectionsEl = document.getElementById("totalCorrections");
+
+            inputField.addEventListener("input", () => {
+                const text = inputField.value.trim();
+                const words = text.split(/\s+/);
+                const totalWords = words.length;
+
+                totalWordsEl.textContent = `Total Words: ${totalWords}`;
+                suggestionsContainer.innerHTML = ""; // Clear previous suggestions
+
+                let totalCorrections = 0;
+
+                words.forEach(word => {
+                    if (word && !isWordInDictionary(word, dictHash)) {
+                        const suggestions = spellCheck(word, dictHash);
+                        totalCorrections++;
+
+                        const listItem = document.createElement("li");
+                        listItem.innerHTML = `<strong>${word}:</strong> ${suggestions.join(", ")}`;
+                        suggestionsContainer.appendChild(listItem);
+                    }
+                });
+
+                totalCorrectionsEl.textContent = `Total Corrections: ${totalCorrections}`;
+            });
+
+            // Dark Mode Toggle
+            const toggle = document.querySelector(".dark-mode-toggle");
+            toggle.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+            });
+        }
+
+        main();
+    </script>
+</body>
+</html>
+
+         
