@@ -1,0 +1,179 @@
+# ============================================================
+# C++ / Qt Creator
+# ============================================================
+
+# Qt Creator project files
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+Makefile*
+*build-*
+*.qm
+
+# Qt build directories
+build/
+debug/
+release/
+x64/
+x86/
+*.build/
+CMakeLists.txt.user
+
+# Compiled binaries
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.so.*
+*.dylib
+*.a
+*.lib
+*.o
+*.obj
+*.elf
+
+# QMake generated
+.qmake.stash
+.qmake.cache
+
+# Qt resource compiler
+*.qrc.depends
+
+# ============================================================
+# CMAKE
+# ============================================================
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# ============================================================
+# VISUAL STUDIO / MSVC
+# ============================================================
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.ncb
+*.sdf
+*.opensdf
+*.cachefile
+*.ilk
+*.pdb
+*.idb
+*.tlog
+*.lastbuildstate
+ipch/
+
+# ============================================================
+# WEB (HTML / CSS / JavaScript)
+# ============================================================
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.vite/
+.vitepress/dist
+
+# Bundler outputs
+*.bundle.js
+*.bundle.css
+*.min.js
+*.min.css
+*.map
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# ============================================================
+# IDE / EDITORS
+# ============================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.cproject
+.settings/
+.classpath
+
+# ============================================================
+# MODELS / DATA / ASSETS (Large Files)
+# ============================================================
+*.keras
+*.h5
+*.hdf5
+*.pkl
+*.pth
+*.onnx
+*.tflite
+*.mlpackage
+*.mlmodel
+*.pb
+*.weights
+
+# Datasets
+asl_dataset/
+dataset/
+data/
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Training outputs
+logs/
+checkpoints/
+runs/
+wandb/
+
+# ============================================================
+# GENERATED / TEMP
+# ============================================================
+tmp/
+temp/
+*.tmp
+*.temp
+*.log
+*.bak
+*.orig
+
+# ============================================================
+# OS
+# ============================================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
