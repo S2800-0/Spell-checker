@@ -457,11 +457,6 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ---
 
-## Contact
-
-- **Author:** [Your Name]
-- **Email:** [your.email@example.com]
-- **Project Link:** [https://github.com/YOUR_USERNAME/BRIDGE-CPP](https://github.com/YOUR_USERNAME/BRIDGE-CPP)
 
 ---
 
